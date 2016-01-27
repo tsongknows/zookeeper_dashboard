@@ -3,7 +3,7 @@ from django.shortcuts import render_to_response
 from zookeeper_dashboard.zkadmin.models import ZKServer
 from zookeeper_dashboard.common import get_zookeeper_servers
 
-ZOOKEEPER_SERVERS = get_zookeeper_servers.split(',')
+ZOOKEEPER_SERVERS = get_zookeeper_servers().split(',')
 
 def index(request):
     server_data = []
