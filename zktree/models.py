@@ -2,7 +2,7 @@ from django.conf import settings
 
 from datetime import datetime
 import threading
-import zookeeper
+from kazoo.client import KazooClient
 
 PERM_READ = 1
 PERM_WRITE = 2
@@ -11,58 +11,72 @@ PERM_DELETE = 8
 PERM_ADMIN = 16
 PERM_ALL = PERM_READ | PERM_WRITE | PERM_CREATE | PERM_DELETE | PERM_ADMIN
 
-zookeeper.set_log_stream(open("cli_log.txt","w"))
-
 TIMEOUT = 10.0
 
 class ZKClient(object):
     def __init__(self, servers, timeout):
         self.connected = False
-        self.conn_cv = threading.Condition( )
-        self.handle = -1
-
-        self.conn_cv.acquire()
         print("Connecting to %s" % (servers))
-        self.handle = zookeeper.init(servers, self.connection_watcher, 30000)
-        self.conn_cv.wait(timeout)
-        self.conn_cv.release()
-
-        if not self.connected:
-            raise Exception("Unable to connect to %s" % (servers))
-
-        print("Connected, handle is %d" % (self.handle))
-
-    def connection_watcher(self, h, type, state, path):
-        self.handle = h
-        self.conn_cv.acquire()
-        self.connected = True
-        self.conn_cv.notifyAll()
-        self.conn_cv.release()
+        self.zk_client = KazooClient(hosts=servers)
+        self.zk_client.start(timeout=timeout)
 
     def close(self):
-        zookeeper.close(self.handle)
-    
+        self.zk_client.stop()
+
     def get(self, path, watcher=None):
-        return zookeeper.get(self.handle, path, watcher)
+        return self.zk_client.get(path, watcher)
 
     def get_children(self, path, watcher=None):
-        return zookeeper.get_children(self.handle, path, watcher)
+        return self.zk_client.get_children(path, watcher)
 
     def get_acls(self, path):
-        return zookeeper.get_acl(self.handle, path)
+        return self.zk_client.get_acls(path)
 
 ZOOKEEPER_SERVERS = getattr(settings,'ZOOKEEPER_SERVERS')
 
 class ZNode(object):
+    @staticmethod
+    def dict_from_znode_stat(znode_stat):
+        if znode_stat == None:
+            return {}
+        return {'aversion': znode_stat.aversion,
+                'count': znode_stat.count,
+                'created': znode_stat.created,
+                'ctime': znode_stat.ctime,
+                'cversion': znode_stat.cversion,
+                'czxid': znode_stat.czxid,
+                'dataLength': znode_stat.dataLength,
+                'ephemeralOwner': znode_stat.ephemeralOwner,
+                'index': znode_stat.index,
+                'last_modified': znode_stat.last_modified,
+                'last_modified_transaction_id': znode_stat.last_modified_transaction_id,
+                'mtime': znode_stat.mtime,
+                'mzxid': znode_stat.mzxid,
+                'numChildren': znode_stat.numChildren,
+                'pzxid': znode_stat.pzxid,
+                'version': znode_stat.version}
+
+    @staticmethod
+    def dict_from_acl(acl):
+        return {'acl_list': acl.acl_list,
+                'count': acl.count,
+                'id': acl.id,
+                'index': acl.index,
+                'perms': acl.perms}
+
     def __init__(self, path="/"):
         self.path = path
         zk = ZKClient(ZOOKEEPER_SERVERS, TIMEOUT)
         try:
-            self.data, self.stat = zk.get(path)
-            self.stat['ctime'] = datetime.fromtimestamp(self.stat['ctime']/1000)
-            self.stat['mtime'] = datetime.fromtimestamp(self.stat['mtime']/1000)
+            self.data, znode_stat = zk.get(path)
+            self.stat = self.dict_from_znode_stat(znode_stat)
+
+            self.stat['ctime'] = datetime.fromtimestamp(self.stat.get('ctime',0)/1000)
+            self.stat['mtime'] = datetime.fromtimestamp(self.stat.get('mtime',0)/1000)
             self.children = zk.get_children(path) or []
-            self.acls = zk.get_acls(path)[1] or []
+            acl_list = zk.get_acls(path)[0] or []
+            self.acls = map(self.dict_from_acl, acl_list)
+
             for acl in self.acls:
                 perms = acl['perms']
                 perms_list = []

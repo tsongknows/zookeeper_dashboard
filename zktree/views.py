@@ -10,12 +10,14 @@ def istext(s, text_chars="".join(map(chr, range(32, 127))) + "\n\r\t\b"):
     return len(t) == 0
 
 def index(request, path=""):
+    import logging
+    logging.info("HEY")
     print(path)
     path = "/" + path
     try:
         znode = ZNode(path)
         znode.children.sort()
-        if not istext(znode.data):
+        if znode.data and not istext(znode.data):
             znode.data = "0x" + "".join(["%d" % (ord(d)) for d in znode.data])
             znode.datatype = "bin"
         else:

@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15">
 <link rel="stylesheet" href="/css/blueprint/screen.css" type="text/css" media="screen, projection">
-<link rel="stylesheet" href="/css/blueprint/print.css" type="text/css" media="print">	
+<link rel="stylesheet" href="/css/blueprint/print.css" type="text/css" media="print">
 <!--[if lt IE 8]><link rel="stylesheet" href="/css/blueprint/ie.css" type="text/css" media="screen, projection"><![endif]-->
 
 <link type="text/css" rel="stylesheet" href="/css/zookeeper_dashboard.css" />
@@ -20,7 +20,16 @@
 <table>
 <tr><th>server</th><th>mode</th><th>#conn</th><th>version</th></tr>
   {% for sd in server_data %}
-  <tr class="{% cycle 'oddrow' 'evenrow' %}"><td><a href="cluster/server/{{sd.id}}">{{ sd.host }}:{{ sd.port }}</a> </td><td> {% ifequal sd.mode "leader" %}<b>{% endifequal %} {{sd.mode|capfirst}} {% ifequal sd.mode "leader" %}</b>{% endifequal %} </td><td> {{ sd.sessions|length }} </td><td> {{ sd.version }}</td></tr>
+  <tr class="{% cycle 'oddrow' 'evenrow' %}">
+    <td>
+        {% ifequal sd.mode "Unreachable" %}
+            <div>{{ sd.host }}:{{ sd.port }}</div>
+        {% else %}
+            <a href="cluster/server/{{sd.id}}">{{ sd.host }}:{{ sd.port }}</a>
+        {% endifequal %}
+    </td>
+    <td> {% ifequal sd.mode "leader" %}<b>{% endifequal %} {{sd.mode|capfirst}} {% ifequal sd.mode "leader" %}</b>{% endifequal %} </td>
+    <td> {{ sd.sessions|length }} </td><td> {{ sd.version }}</td></tr>
   {% endfor %}
 </table>
 <p>

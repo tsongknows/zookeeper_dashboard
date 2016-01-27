@@ -1,0 +1,2 @@
+django==1.2
+kazoo==2.0

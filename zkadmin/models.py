@@ -24,7 +24,7 @@ class ZKServer(object):
             stat = self.send_cmd('stat\n')
             envi = self.send_cmd('envi\n')
         except:
-            self.mode = "Unavailable"
+            self.mode = "Unreachable"
             self.sessions = []
             self.version = "Unknown"
             return
@@ -58,8 +58,11 @@ class ZKServer(object):
         tn = telnetlib.Telnet(self.host, self.port)
 
         tn.write(cmd)
-
-        result = tn.read_all()
+        # Was getting a weird error where first read_all failed
+        try:
+            result = tn.read_all()
+        except:
+            result = tn.read_all()
         tn.close()
 
         return result
