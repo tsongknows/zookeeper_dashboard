@@ -5,4 +5,4 @@ ADD . /zookeeper_dashboard
 
 RUN pip install -r /zookeeper_dashboard/requirements.txt
 
-RUN cd /zookeeper_dahsboard; python manage.py runserver
+CMD cd /zookeeper_dashboard; python manage.py runserver
