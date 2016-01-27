@@ -1,5 +1,4 @@
 from django.shortcuts import render_to_response
-from django.conf import settings
 
 from zookeeper_dashboard.zkadmin.models import ZKServer
 from zookeeper_dashboard.common import get_zookeeper_servers
