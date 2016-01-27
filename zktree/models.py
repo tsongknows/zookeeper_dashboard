@@ -1,8 +1,9 @@
 from django.conf import settings
 
 from datetime import datetime
-import threading
 from kazoo.client import KazooClient
+
+from zookeeper_dashboard.common import get_zookeeper_servers
 
 PERM_READ = 1
 PERM_WRITE = 2
@@ -32,7 +33,7 @@ class ZKClient(object):
     def get_acls(self, path):
         return self.zk_client.get_acls(path)
 
-ZOOKEEPER_SERVERS = getattr(settings,'ZOOKEEPER_SERVERS')
+ZOOKEEPER_SERVERS = get_zookeeper_servers()
 
 class ZNode(object):
     @staticmethod

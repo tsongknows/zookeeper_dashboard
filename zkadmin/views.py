@@ -2,8 +2,9 @@ from django.shortcuts import render_to_response
 from django.conf import settings
 
 from zookeeper_dashboard.zkadmin.models import ZKServer
+from zookeeper_dashboard.common import get_zookeeper_servers
 
-ZOOKEEPER_SERVERS = getattr(settings,'ZOOKEEPER_SERVERS').split(',')
+ZOOKEEPER_SERVERS = get_zookeeper_servers.split(',')
 
 def index(request):
     server_data = []

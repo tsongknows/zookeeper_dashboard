@@ -2,8 +2,7 @@
 
 ### ZooKeeper specific settings
 
-
-ZOOKEEPER_SERVERS = "core-zk1-prod.gc.com:2181,core-zk2-prod.gc.com:2181,core-zk3-prod.gc.com:2181"
+ZOOKEEPER_SERVERS = "127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183"
 
 ### From here down are Django settings
 
