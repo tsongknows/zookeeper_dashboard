@@ -9,7 +9,20 @@ OP_ACCEPT = 16
 
 class Session(object):
     def __init__(self, session):
-        m = re.search('/(\d+\.\d+\.\d+\.\d+):(\d+)\[(\d+)\]\((.*)\)', session)
+        ipv4 = re.search('/(\d+\.\d+\.\d+\.\d+):(\d+)\[(\d+)\]\((.*)\)', session)
+        ipv6 = re.search('/(\d+:\d+:\d+:\d+:\d+:\d+:\d+:\d+):(\d+)\[(\d+)\]\((.*)\)', session)
+
+        if ipv4:
+            m = ipv4
+        elif ipv6:
+            m = ipv6
+        else:
+            self.host = "COULD NOT PARSE"
+            self.post = "COULD NOT PARSE"
+            self.interest_ops = "COULD NOT PARSE"
+            self.__dict__ = {}
+            return
+
         self.host = m.group(1)
         self.port = m.group(2)
         self.interest_ops = m.group(3)
@@ -31,6 +44,7 @@ class ZKServer(object):
 
         sio = StringIO.StringIO(stat)
         line = sio.readline()
+
         m = re.search('.*: (\d+\.\d+\.\d+)-.*', line)
         self.version = m.group(1)
         sio.readline()
@@ -38,6 +52,7 @@ class ZKServer(object):
         for line in sio:
             if not line.strip():
                 break
+
             self.sessions.append(Session(line.strip()))
         for line in sio:
             attr, value = line.split(':')
