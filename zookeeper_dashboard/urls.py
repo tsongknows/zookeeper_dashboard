@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.conf.urls import url, include
 
 urlpatterns = [
                url(r'^cluster/', include('zookeeper_dashboard.zkadmin.urls')),
