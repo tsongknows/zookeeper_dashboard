@@ -25,9 +25,9 @@ ZOOKEEPER_SERVERS = "127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183"
 SECRET_KEY = '4dsaxue!a+c+9*5^0rk1a!d3mzly5%jg6)p&y0_nsq@)4280mh'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
