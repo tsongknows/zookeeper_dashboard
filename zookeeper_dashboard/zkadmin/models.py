@@ -36,14 +36,15 @@ class ZKServer(object):
         try:
             stat = self.send_cmd('stat\n')
             envi = self.send_cmd('envi\n')
+            sio = StringIO.StringIO(stat)
+            line = sio.readline()
+            if 'not currently serving requests' in line:
+                raise Exception("This ZooKeeper instance is not currently serving requests")
         except:
             self.mode = "Unreachable"
             self.sessions = []
             self.version = "Unknown"
             return
-
-        sio = StringIO.StringIO(stat)
-        line = sio.readline()
 
         m = re.search('.*: (\d+\.\d+\.\d+)-.*', line)
         self.version = m.group(1)
