@@ -1,5 +1,5 @@
 import re
-import StringIO
+from six import StringIO
 import telnetlib
 
 OP_READ = 1
