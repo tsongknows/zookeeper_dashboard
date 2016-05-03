@@ -1,5 +1,5 @@
 import re
-import StringIO
+from six import StringIO
 import telnetlib
 
 OP_READ = 1
@@ -36,7 +36,7 @@ class ZKServer(object):
         try:
             stat = self.send_cmd('stat\n')
             envi = self.send_cmd('envi\n')
-            sio = StringIO.StringIO(stat)
+            sio = StringIO(stat)
             line = sio.readline()
             if 'not currently serving requests' in line:
                 raise Exception("This ZooKeeper instance is not currently serving requests")
@@ -63,7 +63,7 @@ class ZKServer(object):
         self.min_latency, self.avg_latency, self.max_latency = self.latency_min_avg_max.split("/")
 
         self.envi = []
-        sio = StringIO.StringIO(envi)
+        sio = StringIO(envi)
         for line in sio:
             if not line.strip(): break
             attr, equ, value = line.partition("=")
