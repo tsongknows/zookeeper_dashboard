@@ -1,11 +1,14 @@
 import re
 from six import StringIO
 import telnetlib
+import traceback
+import socket
 
 OP_READ = 1
 OP_WRITE = 4
 OP_CONNECT = 8
 OP_ACCEPT = 16
+
 
 class Session(object):
     def __init__(self, session):
@@ -40,8 +43,14 @@ class ZKServer(object):
             line = sio.readline()
             if 'not currently serving requests' in line:
                 raise Exception("This ZooKeeper instance is not currently serving requests")
-        except:
+        except socket.error:
             self.mode = "Unreachable"
+            self.sessions = []
+            self.version = "Unknown"
+            return
+        except Exception as e:
+            traceback.print_exc()
+            self.mode = "Internal error"
             self.sessions = []
             self.version = "Unknown"
             return
@@ -72,13 +81,15 @@ class ZKServer(object):
 
     def send_cmd(self, cmd):
         tn = telnetlib.Telnet(self.host, self.port)
-
-        tn.write(cmd)
+        tn.write(cmd.encode('latin-1'))
         # Was getting a weird error where first read_all failed
         try:
-            result = tn.read_all()
+            return tn.read_all().decode('utf-8')
         except:
-            result = tn.read_all()
-        tn.close()
-
-        return result
+            try:
+                return tn.read_all().decode('utf-8')
+            except:
+                traceback.print_exc()
+                raise
+        finally:
+            tn.close()
