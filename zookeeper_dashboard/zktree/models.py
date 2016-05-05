@@ -31,7 +31,6 @@ class ZKClient(object):
     def get_acls(self, path):
         return self.zk_client.get_acls(path)
 
-ZOOKEEPER_SERVERS = get_zookeeper_servers()
 
 class ZNode(object):
     @staticmethod
@@ -65,7 +64,7 @@ class ZNode(object):
 
     def __init__(self, path="/"):
         self.path = path
-        zk = ZKClient(ZOOKEEPER_SERVERS, TIMEOUT)
+        zk = ZKClient(get_zookeeper_servers(), TIMEOUT)
         try:
             self.data, znode_stat = zk.get(path)
             self.stat = self.dict_from_znode_stat(znode_stat)
