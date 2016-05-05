@@ -93,3 +93,11 @@ class ZNode(object):
                 acl['perm_list'] = perms_list
         finally:
             zk.close()
+
+    def path_parts(self):
+        url = '/tree'
+        yield 'Home', url
+        for node in self.path[1:].split('/'):
+            if node:
+                url += '/%s' % node
+                yield node, url
