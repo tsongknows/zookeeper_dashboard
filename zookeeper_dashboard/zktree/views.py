@@ -1,6 +1,6 @@
 from django.shortcuts import render_to_response
 import string
-
+import traceback
 from zookeeper_dashboard.zktree.models import ZNode
 
 def istext(s, text_chars="".join(map(chr, range(32, 127))) + "\n\r\t\b"):
@@ -10,9 +10,6 @@ def istext(s, text_chars="".join(map(chr, range(32, 127))) + "\n\r\t\b"):
     return len(t) == 0
 
 def index(request, path=""):
-    import logging
-    logging.info("HEY")
-    print(path)
     path = "/" + path
     try:
         znode = ZNode(path)
@@ -26,5 +23,6 @@ def index(request, path=""):
         return render_to_response('zktree/index.html',
                                   {'znode':znode})
     except Exception as err:
+        traceback.print_exc()
         return render_to_response('zktree/error.html',
                                   {'error':str(err)})
