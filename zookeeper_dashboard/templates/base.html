@@ -1,0 +1,73 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15">
+
+    <title>ZooKeeper Dashboard</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+    <style>
+      body { padding-top: 70px; }
+    </style>
+
+    {% load static %}
+  </head>
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/">
+            ZookeeperDashboard
+          </a>
+        </div>
+        <div>
+          <ul class="nav navbar-nav">
+            <li {% if not znode %}class="active" {% endif %}>
+              <a href="/">
+                Cluster
+              </a>
+            </li>
+            <li {% if znode %}class="active" {% endif %}>
+              <a href="/tree">
+                ZNode Tree
+              </a>
+            </li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/tree/zookeeper/quota">
+                Quota
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="container">
+      {% block content %}
+      {% endblock %}
+    </div>
+  </body>
+  <foot>
+    <br/>
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div>
+          <p class="navbar-text">
+            <address>
+              <a href="http://github.com/phunt/zookeeper_dashboard#readme">zookeeper_dashboard</a> was created by
+              <a href="http://twitter.com/phunt">Patrick Hunt</a> and is hosted at GitHub
+            </address>
+          </p>
+        </div>
+      </div>
+    </nav>
+  </foot>
+</head>
